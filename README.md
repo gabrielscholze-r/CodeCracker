@@ -16,6 +16,6 @@ O CodeCracker - Trivia de Programação é um aplicativo que oferece perguntas d
 
 ### Autores
 
-Gabriel Scholze Rosa - <a target="_blank" href="https://github.com/gabrielscholze-r">Github</a> :arrow_upper_right:
+Gabriel Scholze Rosa - <a href="https://github.com/gabrielscholze-r" target="_blank">Github</a> :arrow_upper_right:
 
-Carlos Henrique Moreira dos Santos - <a target="_blank" href="https://github.com/carlinhos11012">Github</a> :arrow_upper_right:
+Carlos Henrique Moreira dos Santos - <a href="https://github.com/carlinhos11012" target="_blank">Github</a> :arrow_upper_right:
