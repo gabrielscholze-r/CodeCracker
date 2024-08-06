@@ -9,11 +9,14 @@ import com.scholze.codecracker.ui.components.LoginPage
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.firebase.FirebaseApp
 import com.scholze.codecracker.ui.components.CreateAccount
+import com.scholze.codecracker.ui.components.Profile
 import com.scholze.codecracker.ui.theme.CodecrackerTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,10 +26,22 @@ class MainActivity : ComponentActivity() {
         setContent {
             CodecrackerTheme {
                 val navController = rememberNavController()
-                NavHost(navController, startDestination = "login") {
-                    composable("login") { LoginPage(navController) }
-                    composable("createAccount") { CreateAccount(navController) }
+                NavHost(navController = navController, startDestination = "login") {
+                    composable("login") {
+                        LoginPage(navController)
+                    }
+                    composable(
+                        route = "profile/{userId}",
+                        arguments = listOf(navArgument("userId") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val userId = backStackEntry.arguments?.getString("userId")
+                        Profile(userId, navController)
+                    }
+                    composable("createAccount") {
+                        CreateAccount(navController)
+                    }
                 }
+
             }
         }
     }
