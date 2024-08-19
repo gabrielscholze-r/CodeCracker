@@ -1,7 +1,7 @@
 package com.scholze.codecracker.ui.components
 
+import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,6 +10,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,13 +31,33 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.scholze.codecracker.R
 
 @Composable
-fun Profile(userId: String?, navController: NavController) {
+fun Profile(navController: NavController) {
     val auth = remember { FirebaseAuth.getInstance() }
     val user = auth.currentUser
     val context = LocalContext.current
+    val score = remember { mutableStateOf<Int?>(null) }
+    val firestore = FirebaseFirestore.getInstance()
+
+    // Fetch the score from Firebase
+    LaunchedEffect(user?.email) {
+        user?.email?.let { email ->
+            firestore.collection("user")
+                .document(email)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document != null) {
+                        score.value = document.getLong("score")?.toInt()
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("Profile", "Error fetching score: ", exception)
+                }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -87,7 +109,7 @@ fun Profile(userId: String?, navController: NavController) {
                 .fillMaxWidth(0.8f),
             color1 = Color.White,
             color2 = Color(0xFFE88D67),
-            "10"
+            text2 = score.value?.toString() ?: "Loading..."
         )
         Button(
             onClick = {
@@ -198,6 +220,6 @@ fun TwoColorRectangle(
 fun ProfilePreview() {
     val navController = rememberNavController()
     CompositionLocalProvider(LocalContext provides LocalContext.current) {
-        Profile(userId = "12345", navController = navController)
+        Profile(navController = navController)
     }
 }
