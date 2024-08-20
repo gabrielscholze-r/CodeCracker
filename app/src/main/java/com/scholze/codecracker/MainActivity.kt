@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
                         arguments = listOf(navArgument("userId") { type = NavType.StringType })
                     ) { backStackEntry ->
                         val userId = backStackEntry.arguments?.getString("userId")
-                        Profile(userId, navController)
+                        Profile(navController)
                     }
                     composable("createAccount") {
                         CreateAccount(navController)
