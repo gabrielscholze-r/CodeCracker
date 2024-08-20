@@ -18,6 +18,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun CreateAccount(navController: NavController) {
@@ -25,20 +26,18 @@ fun CreateAccount(navController: NavController) {
     val password = remember { mutableStateOf("") }
     val auth = remember { FirebaseAuth.getInstance() }
     val context = LocalContext.current
+    val db = FirebaseFirestore.getInstance()
 
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
-
         horizontalAlignment = Alignment.CenterHorizontally
-
-    ){
+    ) {
         OutlinedTextField(
             value = email.value,
             onValueChange = { email.value = it },
             label = { Text("Email") },
-            modifier
-            = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp)
         )
         OutlinedTextField(
             value = password.value,
@@ -50,23 +49,30 @@ fun CreateAccount(navController: NavController) {
         )
         Button(
             onClick = {
-                if(password.value.length>=6 && email.value.isNotEmpty())
-                {
+                if (password.value.length >= 6 && email.value.isNotEmpty()) {
                     auth.createUserWithEmailAndPassword(email.value, password.value)
-                        .addOnCompleteListener {
-                            task ->
-                            if(task.isSuccessful){
-                                Toast.makeText(context, "Account Created", Toast.LENGTH_SHORT).show()
-                                navController.navigate("login")
-                            } else{
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                val user = hashMapOf(
+                                    "score" to 0
+                                )
+                                db.collection("user").document(email.value)
+                                    .set(user)
+                                    .addOnSuccessListener {
+                                        Toast.makeText(context, "Account Created", Toast.LENGTH_SHORT).show()
+                                        navController.navigate("login")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Toast.makeText(context, "Failed to create user data: ${e.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                            } else {
                                 Toast.makeText(context, "Account Creation Failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                             }
                         }
-                } else{
+                } else {
                     Toast.makeText(context, "Invalid Fields", Toast.LENGTH_SHORT).show()
                 }
             }
-            
         ) {
             Text(text = "Create Account")
         }
