@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             CodecrackerTheme {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "home/Hn7bcpQLoKT7hH3Ly4UptqAYKQr1") {
+                NavHost(navController = navController, startDestination = "login") {
                     composable("login") {
                         LoginPage(navController)
                     }
