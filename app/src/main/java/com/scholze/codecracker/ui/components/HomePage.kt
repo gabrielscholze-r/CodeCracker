@@ -1,5 +1,6 @@
 package com.scholze.codecracker.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,14 +32,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun HomePage(navController: NavController) {
+    val auth = remember { FirebaseAuth.getInstance() }
+    val user = auth.currentUser
 
     var selected by remember {
         mutableIntStateOf(0)
@@ -52,7 +58,8 @@ fun HomePage(navController: NavController) {
                         selected = index == selected,
                         onClick = {
                             selected = index
-                            navController.navigate(bottomNavItem.route+"/")
+                            Log.i("teste",auth.currentUser?.uid +"")
+                            navController.navigate(bottomNavItem.route+"/"+auth.currentUser?.uid)
                         },
                         icon = {
                             BadgedBox(
@@ -87,28 +94,12 @@ fun HomePage(navController: NavController) {
         },
     ) {
         val padding = it
-    }
-}
-
-@Composable
-fun HomeContent() {
-    // Conteúdo específico da Home
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Home Screen")
-    }
-}
-
-@Composable
-fun AccountContent() {
-    // Conteúdo específico da Account
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Account Screen")
+        Text(
+            text = user?.email ?: "No email",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Gray
+        )
     }
 }
 
@@ -136,7 +127,6 @@ data class BottomNavItem(
     val route: String,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
-    // TODO - Verificar com Gabriel se vamos utilizar essas duas propriedades
     val hasNews: Boolean,
     val badges: Int
 )
