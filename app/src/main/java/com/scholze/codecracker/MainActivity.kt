@@ -41,8 +41,8 @@ class MainActivity : ComponentActivity() {
                         route = "profile/{userId}",
                         arguments = listOf(navArgument("userId") { type = NavType.StringType })
                     ) { backStackEntry ->
-                        val userId = backStackEntry.arguments?.getString("userId")
-                        Profile(navController)
+                        var selected = 1
+                        Profile(navController, selected) { selected = it }
                     }
                     composable("createAccount") {
                         CreateAccount(navController)
@@ -51,8 +51,8 @@ class MainActivity : ComponentActivity() {
                         route = "home/{userId}",
                         arguments = listOf(navArgument("userId") { type = NavType.StringType })
                     ) { backStackEntry ->
-                        val userId = backStackEntry.arguments?.getString("userId")
-                        HomePage(navController)
+                        var selected = 0
+                        HomePage(navController, selected) { selected = it }
                     }
                 }
 

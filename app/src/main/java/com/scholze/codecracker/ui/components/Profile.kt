@@ -12,11 +12,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -40,16 +37,12 @@ import com.scholze.codecracker.R
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Profile(navController: NavController) {
+fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int) -> Unit) {
     val auth = remember { FirebaseAuth.getInstance() }
     val user = auth.currentUser
     val context = LocalContext.current
     val score = remember { mutableStateOf<Int?>(null) }
     val firestore = FirebaseFirestore.getInstance()
-
-    var selected by remember {
-        mutableIntStateOf(0)
-    }
 
     // Fetch the score from Firebase
     LaunchedEffect(user?.email) {
@@ -75,8 +68,8 @@ fun Profile(navController: NavController) {
                     NavigationBarItem(
                         selected = index == selected,
                         onClick = {
-                            selected = index
-                            navController.navigate(bottomNavItem.route+"/"+auth.currentUser?.uid)
+                            onSelectedChange(index)
+                            navController.navigate(bottomNavItem.route + "/" + auth.currentUser?.uid)
                         },
                         icon = {
                             BadgedBox(
@@ -272,7 +265,8 @@ fun TwoColorRectangle(
 @Composable
 fun ProfilePreview() {
     val navController = rememberNavController()
+    var selected = 1
     CompositionLocalProvider(LocalContext provides LocalContext.current) {
-        Profile(navController = navController)
+        Profile(navController = navController, selected, onSelectedChange = { selected = it })
     }
 }
