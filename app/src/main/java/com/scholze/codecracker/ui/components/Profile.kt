@@ -1,5 +1,6 @@
 package com.scholze.codecracker.ui.components
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Canvas
@@ -34,8 +35,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.scholze.codecracker.R
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Profile(navController: NavController) {
+fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int) -> Unit) {
     val auth = remember { FirebaseAuth.getInstance() }
     val user = auth.currentUser
     val context = LocalContext.current
@@ -59,81 +61,125 @@ fun Profile(navController: NavController) {
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        Box(
-            modifier = Modifier
-                .background(Color.LightGray)
-                .height(200.dp)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(170.dp)
-                        .padding(10.dp)
-                        .background(Color.White, shape = CircleShape)
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_person_24),
-                            contentDescription = "Profile Icon",
-                            modifier = Modifier.size(80.dp)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                bottomNavItems.forEachIndexed { index, bottomNavItem ->
+                    NavigationBarItem(
+                        selected = index == selected,
+                        onClick = {
+                            onSelectedChange(index)
+                            navController.navigate(bottomNavItem.route + "/" + auth.currentUser?.uid)
+                        },
+                        icon = {
+                            BadgedBox(
+                                badge = {
+                                    if (bottomNavItem.badges != 0) {
+                                        Badge {
+                                            Text(
+                                                text = bottomNavItem.badges.toString()
+                                            )
+                                        }
+                                    } else if (bottomNavItem.hasNews) {
+                                        Badge()
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector =
+                                    if (index == selected)
+                                        bottomNavItem.selectedIcon
+                                    else
+                                        bottomNavItem.unselectedIcon,
+                                    contentDescription = bottomNavItem.title
+                                )
+                            }
+                        },
+                        label = {
+                            Text(text = bottomNavItem.title)
+                        }
+                    )
                 }
-                Text(
-                    text = user?.email ?: "No email",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Gray
-                )
             }
         }
-        TwoColorRectangle(
+    ) {
+        Column(
             modifier = Modifier
-                .height(50.dp)
-                .fillMaxWidth(0.8f),
-            color1 = Color.White,
-            color2 = Color(0xFFE88D67),
-            text2 = score.value?.toString() ?: "Loading..."
-        )
-        Button(
-            onClick = {
-                auth.signOut()
-                navController.navigate("login") {
-                    popUpTo(navController.graph.startDestinationId) {
-                        inclusive = true
-                    }
-                }
-                Toast.makeText(context, "You are no longer logged in", Toast.LENGTH_SHORT).show()
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-            shape = RoundedCornerShape(40)
+                .fillMaxWidth()
+                .fillMaxHeight(0.9F)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "LOGOUT",
-                fontSize = 30.sp,
-                style = TextStyle(
-                    fontSize = 24.sp,
-                    shadow = Shadow(
-                        color = Color.Black, offset = Offset(5.0f, 10f), blurRadius = 3f
+            Box(
+                modifier = Modifier
+                    .background(Color.LightGray)
+                    .height(200.dp)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(170.dp)
+                            .padding(10.dp)
+                            .background(Color.White, shape = CircleShape)
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_person_24),
+                                contentDescription = "Profile Icon",
+                                modifier = Modifier.size(80.dp)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+                    Text(
+                        text = user?.email ?: "No email",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
+                }
+            }
+            TwoColorRectangle(
+                modifier = Modifier
+                    .height(50.dp)
+                    .fillMaxWidth(0.8f),
+                color1 = Color.White,
+                color2 = Color(0xFFE88D67),
+                text2 = score.value?.toString() ?: "Loading..."
+            )
+            Button(
+                onClick = {
+                    auth.signOut()
+                    navController.navigate("login") {
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                    }
+                    Toast.makeText(context, "You are no longer logged in", Toast.LENGTH_SHORT).show()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                shape = RoundedCornerShape(40)
+            ) {
+                Text(
+                    text = "LOGOUT",
+                    fontSize = 30.sp,
+                    style = TextStyle(
+                        fontSize = 24.sp,
+                        shadow = Shadow(
+                            color = Color.Black, offset = Offset(5.0f, 10f), blurRadius = 3f
+                        )
                     )
                 )
-            )
+            }
         }
     }
 }
@@ -219,7 +265,8 @@ fun TwoColorRectangle(
 @Composable
 fun ProfilePreview() {
     val navController = rememberNavController()
+    var selected = 1
     CompositionLocalProvider(LocalContext provides LocalContext.current) {
-        Profile(navController = navController)
+        Profile(navController = navController, selected, onSelectedChange = { selected = it })
     }
 }

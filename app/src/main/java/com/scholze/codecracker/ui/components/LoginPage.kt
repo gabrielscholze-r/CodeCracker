@@ -62,7 +62,7 @@ fun LoginPage(navController: NavController) {
                                 Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT)
                                     .show()
                                 val userId = auth.currentUser?.uid
-                                navController.navigate("profile/$userId")
+                                navController.navigate("home/$userId")
                             } else {
                                 Toast.makeText(
                                     context,
