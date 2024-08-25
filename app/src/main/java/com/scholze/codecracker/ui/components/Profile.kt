@@ -44,7 +44,6 @@ fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int)
     val score = remember { mutableStateOf<Int?>(null) }
     val firestore = FirebaseFirestore.getInstance()
 
-    // Fetch the score from Firebase
     LaunchedEffect(user?.email) {
         user?.email?.let { email ->
             firestore.collection("user")
