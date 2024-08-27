@@ -30,7 +30,10 @@ fun LoginPage(navController: NavController) {
     val password = remember { mutableStateOf("") }
     val auth = remember { FirebaseAuth.getInstance() }
     val context = LocalContext.current
-
+    if (auth.currentUser!=null)
+    {
+        navController.navigate("home/${auth.currentUser?.uid}")
+    }
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
