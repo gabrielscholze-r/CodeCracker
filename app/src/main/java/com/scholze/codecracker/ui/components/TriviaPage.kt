@@ -1,5 +1,6 @@
 package com.scholze.codecracker.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.gson.Gson
 import com.scholze.codecracker.data.LanguageTrivia
 import com.scholze.codecracker.data.BottomNavItem
 import com.scholze.codecracker.data.Question

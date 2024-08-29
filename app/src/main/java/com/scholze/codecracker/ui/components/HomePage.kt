@@ -1,6 +1,8 @@
 package com.scholze.codecracker.ui.components
 
 import android.annotation.SuppressLint
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -107,7 +109,8 @@ fun HomePage(navController: NavController, selected: Int, onSelectedChange: (Int
                     Button(
                         onClick = {
                             val triviaJson = Gson().toJson(trivia)
-                            navController.navigate("language/$triviaJson")
+                            val encodedJson = Uri.encode(triviaJson)
+                            navController.navigate("language/$encodedJson")
                         },
                         modifier = Modifier
                             .fillMaxWidth(0.9f)

@@ -1,6 +1,8 @@
 package com.scholze.codecracker
 
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -63,11 +65,10 @@ class MainActivity : ComponentActivity() {
                             navArgument("triviaJson") { type = NavType.StringType }
                         )
                     ) { backStackEntry ->
-                        val triviaJson = backStackEntry.arguments?.getString("triviaJson") ?: return@composable
+                        val triviaJson = Uri.decode(backStackEntry.arguments?.getString("triviaJson"))  // Decodifica a string JSON
+                        val trivia = Gson().fromJson(triviaJson, LanguageTrivia::class.java)  // Desserializa para o objeto
 
-                        val languageTrivia = Gson().fromJson(triviaJson, LanguageTrivia::class.java)
-
-                        TriviaPage(navController, languageTrivia)
+                        TriviaPage(navController, trivia)
                     }
                 }
 
