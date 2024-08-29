@@ -53,17 +53,33 @@ fun CreateAccount(navController: NavController) {
                     auth.createUserWithEmailAndPassword(email.value, password.value)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                val user = hashMapOf(
-                                    "score" to 0
-                                )
-                                db.collection("user").document(email.value)
-                                    .set(user)
-                                    .addOnSuccessListener {
-                                        Toast.makeText(context, "Account Created", Toast.LENGTH_SHORT).show()
-                                        navController.navigate("login")
+                                db.collection("language").get()
+                                    .addOnSuccessListener { documents ->
+                                        val scores = mutableMapOf<String, Int>()
+
+                                        for (document in documents) {
+                                            val languageName = document.getString("Name") ?: ""
+                                            if (languageName.isNotEmpty()) {
+                                                scores[languageName] = 0
+                                            }
+                                        }
+
+                                        val user = mapOf(
+                                            "scores" to scores
+                                        )
+
+                                        db.collection("user").document(email.value)
+                                            .set(user)
+                                            .addOnSuccessListener {
+                                                Toast.makeText(context, "Account Created", Toast.LENGTH_SHORT).show()
+                                                navController.navigate("login")
+                                            }
+                                            .addOnFailureListener { e ->
+                                                Toast.makeText(context, "Failed to create user data: ${e.message}", Toast.LENGTH_SHORT).show()
+                                            }
                                     }
                                     .addOnFailureListener { e ->
-                                        Toast.makeText(context, "Failed to create user data: ${e.message}", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, "Failed to retrieve languages: ${e.message}", Toast.LENGTH_SHORT).show()
                                     }
                             } else {
                                 Toast.makeText(context, "Account Creation Failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
