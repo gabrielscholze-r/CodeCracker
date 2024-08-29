@@ -1,22 +1,11 @@
 package com.scholze.codecracker
 
+import TriviaPage
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material3.MaterialTheme
 import com.scholze.codecracker.ui.components.LoginPage
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,7 +17,6 @@ import com.scholze.codecracker.data.LanguageTrivia
 import com.scholze.codecracker.ui.components.CreateAccount
 import com.scholze.codecracker.ui.components.HomePage
 import com.scholze.codecracker.ui.components.Profile
-import com.scholze.codecracker.ui.components.TriviaPage
 import com.scholze.codecracker.ui.theme.CodecrackerTheme
 
 class MainActivity : ComponentActivity() {
