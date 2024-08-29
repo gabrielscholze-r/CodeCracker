@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,12 +50,29 @@ import com.scholze.codecracker.data.LanguageTrivia
 fun HomePage(navController: NavController, selected: Int, onSelectedChange: (Int) -> Unit) {
     val auth = remember { FirebaseAuth.getInstance() }
     val user = auth.currentUser
+    val score = remember { mutableStateOf<Map<String, Long>>(value = mapOf()) }
     val triviaList = remember { mutableStateListOf<LanguageTrivia>() }
+    val firestore = FirebaseFirestore.getInstance()
+
     LaunchedEffect(triviaList) {
         println("Iniciando fetchTriviaData")
         val data = fetchTriviaData()
         triviaList.addAll(data)
         println("Trivias carregadas: $triviaList")
+        user?.email?.let { email ->
+            firestore.collection("user")
+                .document(email)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document != null) {
+                        score.value=document.get("scores") as Map<String, Long>
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("Profile", "Error fetching score: ", exception)
+                }
+        }
+
     }
 
     Scaffold(
@@ -124,6 +142,7 @@ fun HomePage(navController: NavController, selected: Int, onSelectedChange: (Int
                 ){
                     triviaList.forEach { trivia ->
                         Button(
+                            enabled = !(score.value[trivia.name]?.toInt()==trivia.questions.size),
                             onClick = {
                                 val triviaJson = Gson().toJson(trivia)
                                 val encodedJson = Uri.encode(triviaJson)

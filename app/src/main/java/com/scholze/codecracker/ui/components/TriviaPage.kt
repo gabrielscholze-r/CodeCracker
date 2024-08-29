@@ -41,6 +41,7 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
                         val languageScore = scoresMap?.get(languageName)?.toInt() ?: 0
 
                         score.value = languageScore
+
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -66,22 +67,27 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
                         val scoresMap = document.get("scores") as? MutableMap<String, Long> ?: mutableMapOf()
                         val currentScore = scoresMap[languageName] ?: 0
                         val newScore = currentScore + 1
-
+                        if (newScore.toInt()==language.questions.size)
+                        {
+                            navController.popBackStack()
+                        }
                         scoresMap[languageName] = newScore
 
                         firestore.collection("user")
                             .document(email)
                             .update("scores", scoresMap)
                             .addOnSuccessListener {
-                                score.value = newScore.toInt()
+                                if (newScore.toInt()<language.questions.size) {
+                                    score.value = newScore.toInt()
+                                }
                             }
                             .addOnFailureListener { exception ->
-                                Log.e("ERRRO", "Error updating score: ", exception)
+                                Log.e("ERROR", "Error updating score: ", exception)
                             }
                     }
                 }
                 .addOnFailureListener { exception ->
-                    Log.e("ERRRO", "Error fetching current scores: ", exception)
+                    Log.e("ERROR", "Error fetching current scores: ", exception)
                 }
         }
     }
