@@ -1,8 +1,11 @@
 package com.scholze.codecracker.ui.components
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import com.google.gson.Gson
 import androidx.compose.material.icons.Icons
@@ -22,14 +25,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.common.reflect.TypeToken
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import com.scholze.codecracker.data.Question
+import com.scholze.codecracker.data.BottomNavItem
+import com.scholze.codecracker.data.LanguageTrivia
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -86,23 +92,34 @@ fun HomePage(navController: NavController, selected: Int, onSelectedChange: (Int
             }
         },
     ) {
-        if (triviaList.isEmpty()) {
-            Text(
-                text = "Carregando trivias...",
-                modifier = Modifier.fillMaxSize(),
-            )
-        } else {
-            triviaList.forEach { trivia ->
-                Button(
-                    onClick = { println(trivia.questions) },
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .padding(horizontal = 16.dp)
-                ) {
-                    Text(text = trivia.name)
+        Column (
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            if (triviaList.isEmpty()) {
+                Text(
+                    text = "Carregando trivias...",
+                    modifier = Modifier.fillMaxSize(),
+                )
+            } else {
+                triviaList.forEach { trivia ->
+                    Button(
+                        onClick = {
+                            val triviaJson = Gson().toJson(trivia)
+                            navController.navigate("language/$triviaJson")
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .height(60.dp)
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        Text(text = trivia.name)
+                    }
                 }
             }
         }
+
     }
 }
 
@@ -123,29 +140,6 @@ val bottomNavItems = listOf(
         hasNews = false,
         badges = 0,
     ),
-)
-
-data class BottomNavItem(
-    val title: String,
-    val route: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
-    val hasNews: Boolean,
-    val badges: Int
-)
-data class Question(
-    val question_number: Int,
-    val question: String,
-    val a1: String,
-    val a2: String,
-    val a3: String,
-    val a4: String,
-    val answer: String
-)
-
-data class LanguageTrivia(
-    val name: String,
-    val questions: List<Question>
 )
 
 suspend fun fetchTriviaData(): List<LanguageTrivia> {

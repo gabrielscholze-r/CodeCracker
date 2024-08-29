@@ -21,9 +21,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.firebase.FirebaseApp
+import com.google.gson.Gson
+import com.scholze.codecracker.data.LanguageTrivia
 import com.scholze.codecracker.ui.components.CreateAccount
 import com.scholze.codecracker.ui.components.HomePage
 import com.scholze.codecracker.ui.components.Profile
+import com.scholze.codecracker.ui.components.TriviaPage
 import com.scholze.codecracker.ui.theme.CodecrackerTheme
 
 class MainActivity : ComponentActivity() {
@@ -53,6 +56,18 @@ class MainActivity : ComponentActivity() {
                     ) { backStackEntry ->
                         var selected = 0
                         HomePage(navController, selected) { selected = it }
+                    }
+                    composable(
+                        route = "language/{triviaJson}",
+                        arguments = listOf(
+                            navArgument("triviaJson") { type = NavType.StringType }
+                        )
+                    ) { backStackEntry ->
+                        val triviaJson = backStackEntry.arguments?.getString("triviaJson") ?: return@composable
+
+                        val languageTrivia = Gson().fromJson(triviaJson, LanguageTrivia::class.java)
+
+                        TriviaPage(navController, languageTrivia)
                     }
                 }
 
