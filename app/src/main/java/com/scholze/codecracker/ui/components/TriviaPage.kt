@@ -40,8 +40,15 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
                 .get()
                 .addOnSuccessListener { document ->
                     if (document != null) {
-                        // Usa 0 se o valor do score for null
-                        score.value = document.getLong("score")?.toInt() ?: 0
+                        // Recupera o mapa de scores
+                        val scoresMap = document.get("scores") as? Map<String, Long>
+
+                        // Obtém o score com base no nome da linguagem
+                        val languageName = language.name // Supondo que você tem esse valor
+                        val languageScore = scoresMap?.get(languageName)?.toInt() ?: 0
+
+                        // Atualiza o valor do score
+                        score.value = languageScore
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -59,21 +66,46 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
     var feedback = remember { mutableStateOf<String?>(null) }
 
     fun updateScore() {
-        val currentScore = score.value ?: 0
-        val newScore = currentScore + 1
+        // Nome da linguagem que você deseja atualizar
+        val languageName = language.name // Supondo que você tem essa variável
+
         user?.email?.let { email ->
             firestore.collection("user")
                 .document(email)
-                .update("score", newScore)
-                .addOnSuccessListener {
-                    // Atualiza o valor local do score após a atualização no Firestore
-                    score.value = newScore
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document != null) {
+                        // Recupera o mapa de scores atual
+                        val scoresMap = document.get("scores") as? MutableMap<String, Long> ?: mutableMapOf()
+
+                        // Pega o score atual para a linguagem ou usa 0 se não existir
+                        val currentScore = scoresMap[languageName] ?: 0
+
+                        // Incrementa o score
+                        val newScore = currentScore + 1
+
+                        // Atualiza o mapa de scores
+                        scoresMap[languageName] = newScore
+
+                        // Atualiza o documento no Firestore com o novo mapa de scores
+                        firestore.collection("user")
+                            .document(email)
+                            .update("scores", scoresMap)
+                            .addOnSuccessListener {
+                                // Atualiza o valor local do score após a atualização no Firestore
+                                score.value = newScore.toInt()
+                            }
+                            .addOnFailureListener { exception ->
+                                Log.e("ERRRO", "Error updating score: ", exception)
+                            }
+                    }
                 }
                 .addOnFailureListener { exception ->
-                    Log.e("ERRRO", "Error updating score: ", exception)
+                    Log.e("ERRRO", "Error fetching current scores: ", exception)
                 }
         }
     }
+
 
     Column(
         modifier = Modifier
