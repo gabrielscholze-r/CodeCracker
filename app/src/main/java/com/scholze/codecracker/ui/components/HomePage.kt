@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,7 +31,10 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.common.reflect.TypeToken
 import com.google.firebase.auth.FirebaseAuth
@@ -96,30 +101,46 @@ fun HomePage(navController: NavController, selected: Int, onSelectedChange: (Int
     ) {
         Column (
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ){
+            Text(
+                text = "CODECRACKER",
+
+                fontSize = 40.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
             if (triviaList.isEmpty()) {
                 Text(
                     text = "Carregando trivias...",
                     modifier = Modifier.fillMaxSize(),
                 )
             } else {
-                triviaList.forEach { trivia ->
-                    Button(
-                        onClick = {
-                            val triviaJson = Gson().toJson(trivia)
-                            val encodedJson = Uri.encode(triviaJson)
-                            navController.navigate("language/$encodedJson")
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .height(60.dp)
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        Text(text = trivia.name)
+                Column (
+                    modifier = Modifier,
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    triviaList.forEach { trivia ->
+                        Button(
+                            onClick = {
+                                val triviaJson = Gson().toJson(trivia)
+                                val encodedJson = Uri.encode(triviaJson)
+                                navController.navigate("language/$encodedJson")
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth(0.9f)
+                                .height(60.dp)
+                                .padding(horizontal = 16.dp)
+                                .padding(vertical = 8.dp)
+
+                        ) {
+                            Text(text = trivia.name)
+                        }
                     }
                 }
+
             }
         }
 

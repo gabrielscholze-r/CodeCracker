@@ -36,20 +36,15 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
                 .get()
                 .addOnSuccessListener { document ->
                     if (document != null) {
-                        // Recupera o mapa de scores
                         val scoresMap = document.get("scores") as? Map<String, Long>
-
-                        // Obtém o score com base no nome da linguagem
-                        val languageName = language.name // Supondo que você tem esse valor
+                        val languageName = language.name
                         val languageScore = scoresMap?.get(languageName)?.toInt() ?: 0
 
-                        // Atualiza o valor do score
                         score.value = languageScore
                     }
                 }
                 .addOnFailureListener { exception ->
                     Log.e("Profile", "Error fetching score: ", exception)
-                    // Define score como 0 em caso de falha
                     score.value = 0
                 }
         }
@@ -60,8 +55,7 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
     var feedback = remember { mutableStateOf<String?>(null) }
 
     fun updateScore() {
-        // Nome da linguagem que você deseja atualizar
-        val languageName = language.name // Supondo que você tem essa variável
+        val languageName = language.name
 
         user?.email?.let { email ->
             firestore.collection("user")
@@ -69,24 +63,16 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
                 .get()
                 .addOnSuccessListener { document ->
                     if (document != null) {
-                        // Recupera o mapa de scores atual
                         val scoresMap = document.get("scores") as? MutableMap<String, Long> ?: mutableMapOf()
-
-                        // Pega o score atual para a linguagem ou usa 0 se não existir
                         val currentScore = scoresMap[languageName] ?: 0
-
-                        // Incrementa o score
                         val newScore = currentScore + 1
 
-                        // Atualiza o mapa de scores
                         scoresMap[languageName] = newScore
 
-                        // Atualiza o documento no Firestore com o novo mapa de scores
                         firestore.collection("user")
                             .document(email)
                             .update("scores", scoresMap)
                             .addOnSuccessListener {
-                                // Atualiza o valor local do score após a atualização no Firestore
                                 score.value = newScore.toInt()
                             }
                             .addOnFailureListener { exception ->
@@ -110,7 +96,6 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Pergunta
             Text(text = language.name, fontSize = 16.sp, color = Color.Gray)
             Text(
                 text = question.question,
@@ -118,8 +103,7 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
                 modifier = Modifier.padding(24.dp)
             )
 
-            // Botões de opções
-            question.options.forEach { option ->
+            question.options.shuffled().forEach { option ->
                 Button(
                     onClick = {
                         feedback.value = if (option.answer) {
@@ -134,21 +118,11 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 ) {
-                    BasicText(text = option.option)
+                    Text(text = option.option, color = Color.White)
                 }
             }
-
-            // Feedback
-//            selectedAnswer.value.let {
-//                BasicText(
-//                    text = feedback ?: "",
-//                    fontSize = 18.sp,
-//                    modifier = Modifier.padding(24.dp)
-//                )
-//            }
         }
 
-        // Barra de progresso e botão de voltar
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -173,7 +147,6 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
                     )
                 }
 
-                // Barra de progresso
                 val totalQuestions = language.questions.size
                 val progress = (index + 1).toFloat() / totalQuestions
 
@@ -192,7 +165,6 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
                 }
             }
 
-            // Número da questão
             Text(
                 text = "${index + 1}/${language.questions.size}",
                 fontSize = 14.sp,
