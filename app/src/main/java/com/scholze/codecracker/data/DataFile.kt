@@ -10,14 +10,16 @@ data class BottomNavItem(
     val hasNews: Boolean,
     val badges: Int
 )
+
+data class Option(
+    val answer: Boolean,
+    val option: String
+)
+
 data class Question(
     val question_number: Int,
     val question: String,
-    val a1: String,
-    val a2: String,
-    val a3: String,
-    val a4: String,
-    val answer: String
+    val options: List<Option>,
 )
 
 data class LanguageTrivia(
