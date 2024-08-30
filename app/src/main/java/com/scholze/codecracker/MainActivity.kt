@@ -27,9 +27,11 @@ class MainActivity : ComponentActivity() {
             CodecrackerTheme {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = "login") {
+                    // Route for Login
                     composable("login") {
                         LoginPage(navController)
                     }
+                    // Route for Profile Page
                     composable(
                         route = "profile/{userId}",
                         arguments = listOf(navArgument("userId") { type = NavType.StringType })
@@ -37,9 +39,11 @@ class MainActivity : ComponentActivity() {
                         var selected = 1
                         Profile(navController, selected) { selected = it }
                     }
+                    // Route for Creating Account
                     composable("createAccount") {
                         CreateAccount(navController)
                     }
+                    // Route for Homepage
                     composable(
                         route = "home/{userId}",
                         arguments = listOf(navArgument("userId") { type = NavType.StringType })
@@ -47,14 +51,15 @@ class MainActivity : ComponentActivity() {
                         var selected = 0
                         HomePage(navController, selected) { selected = it }
                     }
+                    // Route for each trivia page based on language
                     composable(
                         route = "language/{triviaJson}",
                         arguments = listOf(
                             navArgument("triviaJson") { type = NavType.StringType }
                         )
                     ) { backStackEntry ->
-                        val triviaJson = Uri.decode(backStackEntry.arguments?.getString("triviaJson"))  // Decodifica a string JSON
-                        val trivia = Gson().fromJson(triviaJson, LanguageTrivia::class.java)  // Desserializa para o objeto
+                        val triviaJson = Uri.decode(backStackEntry.arguments?.getString("triviaJson"))  // Encode string JSON
+                        val trivia = Gson().fromJson(triviaJson, LanguageTrivia::class.java)  // Deserialize to objeto
 
                         TriviaPage(navController, trivia)
                     }

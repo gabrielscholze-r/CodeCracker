@@ -44,7 +44,7 @@ fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int)
     val context = LocalContext.current
     val score = remember { mutableStateOf<Map<String, Long>?>(null) }
     val firestore = FirebaseFirestore.getInstance()
-
+    //Get Scores of the Current User
     LaunchedEffect(user?.email) {
         user?.email?.let { email ->
             firestore.collection("user")
@@ -62,6 +62,7 @@ fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int)
     }
 
     Scaffold(
+        //Bottom Navigator
         bottomBar = {
             NavigationBar {
                 bottomNavItems.forEachIndexed { index, bottomNavItem ->
@@ -151,13 +152,14 @@ fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int)
             Text(text = "Scores",
                 fontSize = 18.sp,
                 color = Color.Gray)
+            //Map the scores and create a visual for each of them
             score.value?.forEach{ entry ->
                 TwoColorRectangle(
                     modifier = Modifier
                         .height(50.dp)
                         .fillMaxWidth(0.8f),
                     color1 = Color.White,
-                    color2 = Color(0xFFE88D67),
+                    color2 = if (entry.value < 25) Color(0xFFE88D67) else Color(0xFF00B84E),
                     text1 = entry.key,
                     text2 = entry.value.toString()
                 )
@@ -165,6 +167,7 @@ fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int)
 
             Button(
                 onClick = {
+                    //Logout
                     auth.signOut()
                     navController.navigate("login") {
                         popUpTo(navController.graph.startDestinationId) {
@@ -190,6 +193,7 @@ fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int)
         }
     }
 }
+// Method that makes two rectangles within each other
 @Composable
 fun TwoColorRectangle(
     modifier: Modifier = Modifier,
@@ -266,15 +270,5 @@ fun TwoColorRectangle(
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProfilePreview() {
-    val navController = rememberNavController()
-    var selected = 1
-    CompositionLocalProvider(LocalContext provides LocalContext.current) {
-        Profile(navController = navController, selected, onSelectedChange = { selected = it })
     }
 }

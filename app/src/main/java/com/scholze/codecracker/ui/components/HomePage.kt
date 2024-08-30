@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -72,10 +70,9 @@ fun HomePage(navController: NavController, selected: Int, onSelectedChange: (Int
                     Log.e("Profile", "Error fetching score: ", exception)
                 }
         }
-
     }
-
     Scaffold(
+        //Bottom Navigator
         bottomBar = {
             NavigationBar {
                 bottomNavItems.forEachIndexed { index, bottomNavItem ->
@@ -124,7 +121,6 @@ fun HomePage(navController: NavController, selected: Int, onSelectedChange: (Int
         ){
             Text(
                 text = "CODECRACKER",
-
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -142,6 +138,7 @@ fun HomePage(navController: NavController, selected: Int, onSelectedChange: (Int
                 ){
                     triviaList.forEach { trivia ->
                         Button(
+                            //if the user already concluded the trivia, the button will be disabled
                             enabled = !(score.value[trivia.name]?.toInt()==trivia.questions.size),
                             onClick = {
                                 val triviaJson = Gson().toJson(trivia)
@@ -159,13 +156,11 @@ fun HomePage(navController: NavController, selected: Int, onSelectedChange: (Int
                         }
                     }
                 }
-
             }
         }
-
     }
 }
-
+// Bottom Navigator
 val bottomNavItems = listOf(
     BottomNavItem(
         title = "Home",
@@ -184,7 +179,7 @@ val bottomNavItems = listOf(
         badges = 0,
     ),
 )
-
+// Get Trivia List
 suspend fun fetchTriviaData(): List<LanguageTrivia> {
     val languageCollection = FirebaseFirestore.getInstance().collection("language")
     val d = languageCollection.get().await()
