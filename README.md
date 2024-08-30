@@ -1,6 +1,6 @@
 # CodeCracker - Trivia de Programação
 
-Um aplicativo de trivia que desafia seus conhecimentos sobre diversas linguagens de programação, como SQL, HTML, CSS, e muitas outras.
+Um aplicativo de trivia que desafia seus conhecimentos sobre diversas linguagens de programação, como Java, Python e C++
 
 ## Sobre
 
@@ -8,9 +8,9 @@ O CodeCracker - Trivia de Programação é um aplicativo que oferece perguntas d
 
 ### Funcionalidades
 
-- Perguntas de múltipla escolha sobre diversas linguagens de programação.
-- Aumento progressivo de dificuldade com cada pergunta correta.
-- Cobertura de várias linguagens de programação, SQL, HTML, CSS, e muitas outras.
+- Perguntas de múltipla escolha sobre diversas linguagens de programação;
+- Aumento progressivo de dificuldade com cada pergunta correta;
+- Cobertura de várias linguagens de programação, Java, Python e C++;
 - Interface amigável e fácil de usar.
 
 
