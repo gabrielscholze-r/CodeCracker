@@ -29,6 +29,7 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
     val score = remember { mutableStateOf<Int?>(null) }
     val firestore = FirebaseFirestore.getInstance()
 
+    // Get the Trivias and set the current score
     LaunchedEffect(user?.email) {
         user?.email?.let { email ->
             firestore.collection("user")
@@ -39,13 +40,11 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
                         val scoresMap = document.get("scores") as? Map<String, Long>
                         val languageName = language.name
                         val languageScore = scoresMap?.get(languageName)?.toInt() ?: 0
-
                         score.value = languageScore
-
                     }
                 }
                 .addOnFailureListener { exception ->
-                    Log.e("Profile", "Error fetching score: ", exception)
+                    Log.e("TriviaPage", "Error fetching score: ", exception)
                     score.value = 0
                 }
         }
@@ -55,9 +54,9 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
     val question = language.questions[index]
     var feedback = remember { mutableStateOf<String?>(null) }
 
+    //Update the score on the database
     fun updateScore() {
         val languageName = language.name
-
         user?.email?.let { email ->
             firestore.collection("user")
                 .document(email)
@@ -67,12 +66,13 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
                         val scoresMap = document.get("scores") as? MutableMap<String, Long> ?: mutableMapOf()
                         val currentScore = scoresMap[languageName] ?: 0
                         val newScore = currentScore + 1
+                        //Check if user has concluded the current trivia
                         if (newScore.toInt()==language.questions.size)
                         {
                             navController.popBackStack()
                         }
                         scoresMap[languageName] = newScore
-
+                        //update
                         firestore.collection("user")
                             .document(email)
                             .update("scores", scoresMap)
@@ -108,10 +108,11 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
                 fontSize = 20.sp,
                 modifier = Modifier.padding(24.dp)
             )
-
+            //Map the questions in random order to show
             question.options.shuffled().forEach { option ->
                 Button(
                     onClick = {
+                        //Check if was the right answer
                         feedback.value = if (option.answer) {
                             updateScore()
                             "Correto!"
@@ -152,7 +153,7 @@ fun TriviaPage(navController: NavController, language: LanguageTrivia) {
                         tint = Color.White
                     )
                 }
-
+                // Generate a progress bar for the trivia based on the current score
                 val totalQuestions = language.questions.size
                 val progress = (index + 1).toFloat() / totalQuestions
 

@@ -30,10 +30,14 @@ fun LoginPage(navController: NavController) {
     val password = remember { mutableStateOf("") }
     val auth = remember { FirebaseAuth.getInstance() }
     val context = LocalContext.current
+
+    //Check if user is already logged
     if (auth.currentUser!=null)
     {
         navController.navigate("home/${auth.currentUser?.uid}")
     }
+
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -58,6 +62,7 @@ fun LoginPage(navController: NavController) {
         )
         Button(
             onClick = {
+                //Try to Login
                 if (password.value.length >= 6) {
                     auth.signInWithEmailAndPassword(email.value, password.value)
                         .addOnCompleteListener { task ->

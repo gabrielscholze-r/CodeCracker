@@ -15,7 +15,7 @@ fun MainScreen() {
     var selected by remember {
         mutableIntStateOf(0)
     }
-
+    //Routes used in the bottom navigator
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
             HomePage(navController = navController, selected = selected, onSelectedChange = { selected = it })

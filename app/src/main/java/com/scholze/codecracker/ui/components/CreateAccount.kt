@@ -49,6 +49,7 @@ fun CreateAccount(navController: NavController) {
         )
         Button(
             onClick = {
+                //Try to Create Account
                 if (password.value.length >= 6 && email.value.isNotEmpty()) {
                     auth.createUserWithEmailAndPassword(email.value, password.value)
                         .addOnCompleteListener { task ->
@@ -56,7 +57,7 @@ fun CreateAccount(navController: NavController) {
                                 db.collection("language").get()
                                     .addOnSuccessListener { documents ->
                                         val scores = mutableMapOf<String, Int>()
-
+                                        // Create Scores for the new user
                                         for (document in documents) {
                                             val languageName = document.getString("Name") ?: ""
                                             if (languageName.isNotEmpty()) {
@@ -67,7 +68,7 @@ fun CreateAccount(navController: NavController) {
                                         val user = mapOf(
                                             "scores" to scores
                                         )
-
+                                        //Add scores for new user
                                         db.collection("user").document(email.value)
                                             .set(user)
                                             .addOnSuccessListener {

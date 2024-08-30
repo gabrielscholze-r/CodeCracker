@@ -44,7 +44,7 @@ fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int)
     val context = LocalContext.current
     val score = remember { mutableStateOf<Map<String, Long>?>(null) }
     val firestore = FirebaseFirestore.getInstance()
-
+    //Get Scores of the Current User
     LaunchedEffect(user?.email) {
         user?.email?.let { email ->
             firestore.collection("user")
@@ -165,6 +165,7 @@ fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int)
 
             Button(
                 onClick = {
+                    //Logout
                     auth.signOut()
                     navController.navigate("login") {
                         popUpTo(navController.graph.startDestinationId) {
@@ -190,6 +191,7 @@ fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int)
         }
     }
 }
+// Method that makes two rectangles within each other
 @Composable
 fun TwoColorRectangle(
     modifier: Modifier = Modifier,
@@ -266,15 +268,5 @@ fun TwoColorRectangle(
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProfilePreview() {
-    val navController = rememberNavController()
-    var selected = 1
-    CompositionLocalProvider(LocalContext provides LocalContext.current) {
-        Profile(navController = navController, selected, onSelectedChange = { selected = it })
     }
 }
