@@ -58,8 +58,8 @@ class MainActivity : ComponentActivity() {
                             navArgument("triviaJson") { type = NavType.StringType }
                         )
                     ) { backStackEntry ->
-                        val triviaJson = Uri.decode(backStackEntry.arguments?.getString("triviaJson"))  // Decodifica a string JSON
-                        val trivia = Gson().fromJson(triviaJson, LanguageTrivia::class.java)  // Desserializa para o objeto
+                        val triviaJson = Uri.decode(backStackEntry.arguments?.getString("triviaJson"))  // Encode string JSON
+                        val trivia = Gson().fromJson(triviaJson, LanguageTrivia::class.java)  // Deserialize to objeto
 
                         TriviaPage(navController, trivia)
                     }

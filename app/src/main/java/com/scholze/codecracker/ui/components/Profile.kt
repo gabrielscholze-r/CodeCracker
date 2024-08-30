@@ -62,6 +62,7 @@ fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int)
     }
 
     Scaffold(
+        //Bottom Navigator
         bottomBar = {
             NavigationBar {
                 bottomNavItems.forEachIndexed { index, bottomNavItem ->
@@ -151,6 +152,7 @@ fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int)
             Text(text = "Scores",
                 fontSize = 18.sp,
                 color = Color.Gray)
+            //Map the scores and create a visual for each of them
             score.value?.forEach{ entry ->
                 TwoColorRectangle(
                     modifier = Modifier
