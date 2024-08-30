@@ -159,7 +159,7 @@ fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int)
                         .height(50.dp)
                         .fillMaxWidth(0.8f),
                     color1 = Color.White,
-                    color2 = Color(0xFFE88D67),
+                    color2 = if (entry.value < 25) Color(0xFFE88D67) else Color(0xFF00B84E),
                     text1 = entry.key,
                     text2 = entry.value.toString()
                 )
