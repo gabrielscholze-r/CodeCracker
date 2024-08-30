@@ -33,6 +33,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.getField
 import com.scholze.codecracker.R
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -41,7 +42,7 @@ fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int)
     val auth = remember { FirebaseAuth.getInstance() }
     val user = auth.currentUser
     val context = LocalContext.current
-    val score = remember { mutableStateOf<Int?>(null) }
+    val score = remember { mutableStateOf<Map<String, Long>?>(null) }
     val firestore = FirebaseFirestore.getInstance()
 
     LaunchedEffect(user?.email) {
@@ -51,7 +52,7 @@ fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int)
                 .get()
                 .addOnSuccessListener { document ->
                     if (document != null) {
-                        score.value = document.getLong("score")?.toInt()
+                        score.value=document.get("scores") as? Map<String, Long>
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -147,14 +148,21 @@ fun Profile(navController: NavController, selected: Int, onSelectedChange: (Int)
                     )
                 }
             }
-            TwoColorRectangle(
-                modifier = Modifier
-                    .height(50.dp)
-                    .fillMaxWidth(0.8f),
-                color1 = Color.White,
-                color2 = Color(0xFFE88D67),
-                text2 = score.value?.toString() ?: "Loading..."
-            )
+            Text(text = "Scores",
+                fontSize = 18.sp,
+                color = Color.Gray)
+            score.value?.forEach{ entry ->
+                TwoColorRectangle(
+                    modifier = Modifier
+                        .height(50.dp)
+                        .fillMaxWidth(0.8f),
+                    color1 = Color.White,
+                    color2 = Color(0xFFE88D67),
+                    text1 = entry.key,
+                    text2 = entry.value.toString()
+                )
+            }
+
             Button(
                 onClick = {
                     auth.signOut()
@@ -187,6 +195,7 @@ fun TwoColorRectangle(
     modifier: Modifier = Modifier,
     color1: Color,
     color2: Color,
+    text1: String,
     text2: String
 ) {
     Box(
@@ -235,7 +244,7 @@ fun TwoColorRectangle(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Sequence Score",
+                        text = text1,
                         color = Color.Black,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
